@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="myViewModel"
+            type="com.hilbing.roomdemo.SubscriberViewModel"/>
+    </data>
+
+<LinearLayout
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="15dp"
+    tools:context=".MainActivity">
+
+
+    <EditText
+        android:id="@+id/name_TV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:text="@={myViewModel.inputName}"
+        android:hint="Enter your name"
+        android:textStyle="bold"
+        android:inputType="textPersonName"
+        />
+
+    <EditText
+        android:id="@+id/email_TV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:text="@={myViewModel.inputEmail}"
+        android:hint="Enter your email"
+        android:inputType="textPersonName"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/save_or_update_BT"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@={myViewModel.saveOrUpdateBT}"
+            android:onClick="@{()->myViewModel.saveOrUpdate()}"
+            android:layout_margin="5dp"
+            />
+        <Button
+            android:id="@+id/clear_all_BT"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@={myViewModel.clearAllOrDeleteBT}"
+            android:onClick="@{()->myViewModel.clearOrDelete()}"
+            android:layout_margin="5dp"/>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/subscriber_RV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"/>
+</LinearLayout>
+</layout>
