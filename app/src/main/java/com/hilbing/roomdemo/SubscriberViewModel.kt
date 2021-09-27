@@ -2,6 +2,7 @@ package com.hilbing.roomdemo
 
 import androidx.databinding.Bindable
 import androidx.databinding.Observable
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,17 +26,28 @@ class SubscriberViewModel(private val repository: SubscriberRepository): ViewMod
     @Bindable
     val clearAllOrDeleteBT = MutableLiveData<String>()
 
+    private val statusMessage = MutableLiveData<Event<String>>()
+    val message : LiveData<Event<String>>
+    get() = statusMessage
+
     init {
         saveOrUpdateBT.value = "Save"
         clearAllOrDeleteBT.value = "Clear all"
     }
 
     fun saveOrUpdate(){
-        val name = inputName.value!!
-        val email = inputEmail.value!!
-        insert(Subscriber(0,name, email))
-        inputName.value = null
-        inputEmail.value = null
+        if(isUpdateOrDelete){
+            subscriberToUpdateOrDelete.name = inputName.value!!
+            subscriberToUpdateOrDelete.email = inputEmail.value!!
+            update(subscriberToUpdateOrDelete)
+        } else {
+            val name = inputName.value!!
+            val email = inputEmail.value!!
+            insert(Subscriber(0,name, email))
+            inputName.value = null
+            inputEmail.value = null
+        }
+
     }
 
     fun clearOrDelete(){
@@ -60,9 +72,16 @@ class SubscriberViewModel(private val repository: SubscriberRepository): ViewMod
 
     fun insert(subscriber: Subscriber): Job = viewModelScope.launch{
         repository.insert(subscriber)
+        statusMessage.value = Event("Subscriber added successfully")
     }
     fun update(subscriber: Subscriber): Job = viewModelScope.launch {
         repository.update(subscriber)
+        inputName.value = null
+        inputEmail.value = null
+        isUpdateOrDelete = false
+        saveOrUpdateBT.value = "Save"
+        clearAllOrDeleteBT.value = "Clear All"
+        statusMessage.value = Event("Subscriber updated successfully")
     }
     fun delete(subscriber: Subscriber): Job = viewModelScope.launch {
         repository.delete(subscriber)
@@ -71,9 +90,11 @@ class SubscriberViewModel(private val repository: SubscriberRepository): ViewMod
         isUpdateOrDelete = false
         saveOrUpdateBT.value = "Save"
         clearAllOrDeleteBT.value = "Clear all"
+        statusMessage.value = Event("Subscriber deleted successfully")
     }
     fun clearAll(): Job = viewModelScope.launch {
         repository.deleteAll()
+        statusMessage.value = Event("All subscribers deleted successfully")
     }
 
     override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
