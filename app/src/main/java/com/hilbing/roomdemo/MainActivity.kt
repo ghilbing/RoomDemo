@@ -17,6 +17,7 @@ import com.hilbing.roomdemo.db.SubscriberRepository
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var subscriberViewModel: SubscriberViewModel
+    private lateinit var adapter: MyAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -36,13 +37,16 @@ class MainActivity : AppCompatActivity() {
     private fun displaySubscribersList(){
         subscriberViewModel.subscribers.observe(this, Observer {
             Log.i("MyTag", it.toString())
-            binding.subscriberRV.adapter = MyAdapter(it, {selectedItem: Subscriber->listItemClicked(selectedItem)})
+            adapter.setList(it)
+            adapter.notifyDataSetChanged()
         })
 
     }
 
     private fun initRecyclerView(){
         binding.subscriberRV.layoutManager = LinearLayoutManager(this)
+        adapter = MyAdapter({selectedItem:Subscriber->listItemClicked(selectedItem)})
+        binding.subscriberRV.adapter = adapter
         displaySubscribersList()
     }
 
